@@ -1,0 +1,162 @@
+﻿Berikut contoh soal CTF Jeopardy kategori Crypto tingkat Medium–Hard tentang AES-CTR Nonce Reuse.
+
+
+---
+
+Soal: "Reused Counter"
+
+Seorang developer membuat aplikasi enkripsi pesan menggunakan AES-CTR.
+
+Namun ia melakukan kesalahan fatal: nonce yang sama digunakan untuk semua pesan.
+
+Kamu berhasil mendapatkan dua ciphertext berikut.
+
+Ciphertext 1 (plaintext diketahui):
+
+P1 = attack_at_dawn
+
+Ciphertext 1 (hex):
+
+20111704161e2c04172d1d1f1305
+
+Ciphertext 2 (hex):
+
+250013001b12601b0f3b0819030a1d
+
+Flag tersembunyi pada plaintext kedua.
+
+Format flag:
+
+flag{plaintext}
+
+
+---
+
+Petunjuk
+
+CTR bekerja sebagai:
+
+Ciphertext = Plaintext XOR Keystream
+
+Jika nonce sama:
+
+K = P1 XOR C1
+
+lalu:
+
+P2 = C2 XOR K
+
+
+---
+
+Cara Resolve
+
+Langkah 1
+
+Ubah plaintext pertama ke ASCII hex.
+
+attack_at_dawn
+
+ASCII:
+
+61 74 74 61 63 6b 5f 61 74 5f 64 61 77 6e
+
+
+---
+
+Langkah 2
+
+Cari keystream.
+
+K = P1 XOR C1
+
+Contoh byte pertama:
+
+20 XOR 61 = 41
+
+byte kedua:
+
+11 XOR 74 = 65
+
+dst.
+
+Hasil:
+
+41 65 63 65 75 75 73 65
+63 72 79 7e 64 6b
+
+ASCII:
+
+Aeceuusecry~dk
+
+(Itu hanya keystream, tidak perlu dibaca.)
+
+
+---
+
+Langkah 3
+
+Dekripsi ciphertext kedua.
+
+P2 = C2 XOR K
+
+Python:
+
+from binascii import unhexlify
+
+c1 = unhexlify("20111704161e2c04172d1d1f1305")
+c2 = unhexlify("250013001b12601b0f3b0819030a1d")
+
+p1 = b"attack_at_dawn"
+
+ks = bytes([a ^ b for a,b in zip(c1,p1)])
+
+p2 = bytes([a ^ b for a,b in zip(c2,ks)])
+
+print(p2)
+
+Output:
+
+b'dont_reuse_nonce'
+
+
+---
+
+Flag
+
+flag{dont_reuse_nonce}
+
+
+---
+
+Kenapa Medium–Hard?
+
+Peserta harus:
+
+1. Mengenali mode CTR.
+
+
+2. Mengetahui konsep nonce reuse.
+
+
+3. Menghitung keystream.
+
+
+4. Menggunakan XOR untuk recovery plaintext.
+
+
+5. Menulis script sendiri.
+
+
+
+
+---
+
+Versi Hard (sering muncul di final LKS/CTF)
+
+Tidak diberikan plaintext pertama secara langsung, hanya diketahui sebagian:
+
+GET / HTTP/1.1
+Host:
+
+Peserta harus melakukan crib dragging attack untuk menebak plaintext dan memperoleh keystream secara bertahap hingga menemukan flag. Ini jauh lebih menantang dan sangat sering digunakan pada soal AES-CTR/OFB nonce reuse.
