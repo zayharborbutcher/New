@@ -1,0 +1,5 @@
+﻿file hide.png
+strings hide.png
+exiftool hide.png
+binwalk hide.png
+zsteg hide.png
