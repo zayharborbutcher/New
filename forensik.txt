@@ -1,0 +1,423 @@
+﻿Berikut contoh soal Digital Forensics CTF Jeopardy yang sering muncul, beserta cara berpikir untuk menyelesaikannya.
+
+1. Log Analysis
+Soal
+
+Diberikan file:
+
+access.log
+
+Isi:
+
+192.168.1.5 - - [10/Jun/2026:10:01:00] "GET /index.php"
+192.168.1.5 - - [10/Jun/2026:10:01:02] "GET /admin"
+192.168.1.5 - - [10/Jun/2026:10:01:05] "POST /login"
+
+Pertanyaan:
+
+What IP accessed /admin?
+
+Flag:
+
+flag{192.168.1.5}
+
+
+---
+
+2. Steganography
+Soal
+
+Diberikan:
+
+cat.jpg
+
+Hint:
+
+The cat is hiding something.
+
+Penyelesaian
+
+Cek strings:
+
+strings cat.jpg
+
+Output:
+
+FLAG{hidden_inside_image}
+
+Flag:
+
+FLAG{hidden_inside_image}
+
+
+---
+
+3. Steghide
+Soal
+
+Diberikan:
+
+secret.jpg
+
+Hint:
+
+Password = password123
+
+Penyelesaian
+
+steghide extract -sf secret.jpg
+
+Masukkan:
+
+password123
+
+Muncul:
+
+flag.txt
+
+Isi:
+
+FLAG{steg_hide_success}
+
+
+---
+
+4. File Carving
+Soal
+
+Diberikan:
+
+disk.img
+
+Hint:
+
+Deleted files contain evidence.
+
+Penyelesaian
+
+foremost disk.img
+
+Hasil:
+
+output/jpg
+output/pdf
+output/zip
+
+Di dalam ZIP:
+
+FLAG{recovered_file}
+
+
+---
+
+5. Binwalk
+Soal
+
+Diberikan:
+
+firmware.bin
+
+Penyelesaian
+
+binwalk firmware.bin
+
+Output:
+
+ZIP archive
+
+Extract:
+
+binwalk -e firmware.bin
+
+Ditemukan:
+
+flag.txt
+
+Isi:
+
+FLAG{firmware_analysis}
+
+
+---
+
+6. PCAP Analysis
+Soal
+
+Diberikan:
+
+capture.pcap
+
+Pertanyaan:
+
+What password was used?
+
+Penyelesaian
+
+Filter:
+
+ftp
+
+Follow TCP Stream.
+
+Terlihat:
+
+USER admin
+PASS supersecret
+
+Flag:
+
+FLAG{supersecret}
+
+
+---
+
+7. HTTP PCAP
+Soal
+
+Diberikan:
+
+traffic.pcapng
+
+Hint:
+
+Web traffic contains a flag.
+
+Penyelesaian
+
+Filter:
+
+http
+
+Follow Stream.
+
+Terlihat:
+
+FLAG{http_is_cleartext}
+
+
+---
+
+8. DNS Analysis
+Soal
+
+Diberikan:
+
+dns.pcap
+
+Hint:
+
+Look at DNS requests.
+
+Penyelesaian
+
+Filter:
+
+dns
+
+Query:
+
+RkxBR3tkbnNfdHVubmVsaW5nfQ==.evil.com
+
+Decode Base64:
+
+FLAG{dns_tunneling}
+
+
+---
+
+9. Memory Forensics
+Soal
+
+Diberikan:
+
+memory.raw
+
+Pertanyaan:
+
+What process contains the flag?
+
+Penyelesaian
+
+vol.py -f memory.raw pslist
+
+Output:
+
+notepad.exe
+chrome.exe
+flag.exe
+
+Dump:
+
+vol.py procdump
+
+Isi:
+
+FLAG{memory_leak}
+
+
+---
+
+10. Command History
+Soal
+
+Diberikan:
+
+mem.raw
+
+Pertanyaan:
+
+What command attacker executed?
+
+Penyelesaian
+
+vol.py cmdscan
+
+Output:
+
+whoami
+net user
+type flag.txt
+
+Flag:
+
+FLAG{type_flag_txt}
+
+
+---
+
+11. Linux Forensics
+Soal
+
+Diberikan:
+
+home.tar.gz
+
+Penyelesaian
+
+Lihat:
+
+cat .bash_history
+
+Output:
+
+cat secret.txt
+
+File:
+
+FLAG{bash_history_never_lies}
+
+
+---
+
+12. Windows Forensics
+Soal
+
+Diberikan:
+
+Users.zip
+
+Hint:
+
+Check recent activities.
+
+Penyelesaian
+
+Analisis:
+
+NTUSER.DAT
+Prefetch
+Recent Files
+
+Ditemukan:
+
+FLAG{windows_artifact}
+
+
+---
+
+13. EXIF Metadata
+Soal
+
+Diberikan:
+
+beach.jpg
+
+Penyelesaian
+
+exiftool beach.jpg
+
+Output:
+
+Comment : FLAG{metadata_found}
+
+
+---
+
+14. OSINT
+Soal
+
+Pertanyaan:
+
+What is the city where this photo was taken?
+
+Diberikan gambar gedung terkenal.
+
+Penyelesaian
+
+Reverse image search
+
+Google Maps
+
+Street View
+
+
+Flag:
+
+FLAG{bandung}
+
+
+---
+
+15. Multi-Step Forensics (Sering di LKS dan Final CTF)
+Diberikan:
+
+evidence.zip
+
+Isi:
+
+capture.pcap
+memory.raw
+disk.img
+
+Alur penyelesaian:
+
+1. Analisis PCAP → dapat username
+
+2. Analisis Memory → dapat password
+
+3. Login ke ZIP terenkripsi
+
+4. Recover file dari disk image
+
+5. Dapat:
+
+
+FLAG{full_forensics_chain}
+
+
+---
+
+Untuk level LKS Jawa Barat, saya sarankan berlatih minimal:
+
+50 soal PCAP (Wireshark)
+
+30 soal Steganography
+
+20 soal Memory Forensics (Volatility)
+
+20 soal Disk Forensics (Autopsy/Sleuth Kit)
+
+20 soal OSINT
+
+
+karena kombinasi tersebut paling sering keluar dan memiliki poin tinggi dalam kategori Digital Forensics.
